@@ -201,9 +201,9 @@ canvas{display:block;border-radius:var(--radius-sm)}
       <div class="card"><div class="card-title">Acquisition</div><div id="s-downloads"></div></div>
       <div class="card">
         <div class="card-title">Funnel</div>
-        <div id="s-dwldToKyc"></div>
-        <div id="s-kycConv"></div>
-        <div id="s-kycToOrder"></div>
+        <div id="s-step1Conv"></div>
+        <div id="s-step2Conv"></div>
+        <div id="s-step3Conv"></div>
         <div id="s-convUplift"></div>
         <div id="s-convUpliftPct"></div>
         <div id="s-arpu"></div>
@@ -257,9 +257,9 @@ canvas{display:block;border-radius:var(--radius-sm)}
 
   <div class="setting-group">
     <div class="setting-group-title">Conversion Funnel</div>
-    <div class="setting-row"><label>Download → Step 1 (%)</label><input type="number" step="0.1" id="set-dwldToKyc" value="65"/></div>
-    <div class="setting-row"><label>Step 1 → Step 2 (%)</label><input type="number" step="0.1" id="set-kycConv" value="50"/></div>
-    <div class="setting-row"><label>Step 2 → First Order (%)</label><input type="number" step="0.1" id="set-kycToOrder" value="77"/></div>
+    <div class="setting-row"><label>Download → Step 1 (%)</label><input type="number" step="0.1" id="set-step1Conv" value="65"/></div>
+    <div class="setting-row"><label>Step 1 → Step 2 (%)</label><input type="number" step="0.1" id="set-step2Conv" value="50"/></div>
+    <div class="setting-row"><label>Step 2 → First Order (%)</label><input type="number" step="0.1" id="set-step3Conv" value="77"/></div>
     <div class="setting-row"><label>New User ARPU (€/mo)</label><input type="number" id="set-arpu" value="25"/></div>
   </div>
 
@@ -290,13 +290,13 @@ let dark=true;
 let currentTab=0;
 let currentPage='hero';
 let retention=[...DEFAULT_RET];
-let params={downloads:50000,dwldToKyc:65,kycConv:50,kycToOrder:77,arpu:25,convUplift:25,convUpliftPct:0,retUplift:0,existingBase:100000,churnRate:3,existingArpu:20};
+let params={downloads:50000,step1Conv:65,step2Conv:50,step3Conv:77,arpu:25,convUplift:25,convUpliftPct:0,retUplift:0,existingBase:100000,churnRate:3,existingArpu:20};
 
 const sliderDefs=[
   {k:"downloads",label:"Monthly Downloads",min:1000,max:200000,step:1000,suffix:"",color:"#3b82f6",container:"s-downloads"},
-  {k:"dwldToKyc",label:"Download → Step 1",min:10,max:95,step:0.5,suffix:"%",color:"#06b6d4",container:"s-dwldToKyc"},
-  {k:"kycConv",label:"Step 1 → Step 2",min:10,max:95,step:0.5,suffix:"%",color:"#06b6d4",container:"s-kycConv"},
-  {k:"kycToOrder",label:"Step 2 → First Order",min:10,max:95,step:0.5,suffix:"%",color:"#06b6d4",container:"s-kycToOrder"},
+  {k:"step1Conv",label:"Download → Step 1",min:10,max:95,step:0.5,suffix:"%",color:"#06b6d4",container:"s-step1Conv"},
+  {k:"step2Conv",label:"Step 1 → Step 2",min:10,max:95,step:0.5,suffix:"%",color:"#06b6d4",container:"s-step2Conv"},
+  {k:"step3Conv",label:"Step 2 → First Order",min:10,max:95,step:0.5,suffix:"%",color:"#06b6d4",container:"s-step3Conv"},
   {k:"convUplift",label:"Overall Conv. Rate %",min:0,max:40,step:0.1,suffix:"%",color:"#f59e0b",container:"s-convUplift"},
   {k:"convUpliftPct",label:"Conv. Uplift %",min:0,max:100,step:1,suffix:"%",color:"#10b981",container:"s-convUpliftPct"},
   {k:"arpu",label:"New User ARPU (€/mo)",min:5,max:100,step:1,suffix:"€",color:"#f59e0b",container:"s-arpu"},
@@ -318,7 +318,7 @@ function showPage(page){
 }
 
 function enterDashboard(){
-  params.convUplift=params.dwldToKyc/100*params.kycConv/100*params.kycToOrder/100*100;
+  params.convUplift=params.step1Conv/100*params.step2Conv/100*params.step3Conv/100*100;
   showPage('dashboard');
 }
 
@@ -326,9 +326,9 @@ function populateSettings(){
   document.getElementById('set-revenue-prior').value=REVENUE_PRIOR;
   document.getElementById('set-revenue-target').value=TARGET;
   document.getElementById('set-downloads').value=params.downloads;
-  document.getElementById('set-dwldToKyc').value=params.dwldToKyc;
-  document.getElementById('set-kycConv').value=params.kycConv;
-  document.getElementById('set-kycToOrder').value=params.kycToOrder;
+  document.getElementById('set-step1Conv').value=params.step1Conv;
+  document.getElementById('set-step2Conv').value=params.step2Conv;
+  document.getElementById('set-step3Conv').value=params.step3Conv;
   document.getElementById('set-arpu').value=params.arpu;
   document.getElementById('set-existingBase').value=params.existingBase;
   document.getElementById('set-churnRate').value=params.churnRate;
@@ -341,14 +341,14 @@ function applySettings(){
   REVENUE_PRIOR=+document.getElementById('set-revenue-prior').value;
   TARGET=+document.getElementById('set-revenue-target').value;
   params.downloads=+document.getElementById('set-downloads').value;
-  params.dwldToKyc=+document.getElementById('set-dwldToKyc').value;
-  params.kycConv=+document.getElementById('set-kycConv').value;
-  params.kycToOrder=+document.getElementById('set-kycToOrder').value;
+  params.step1Conv=+document.getElementById('set-step1Conv').value;
+  params.step2Conv=+document.getElementById('set-step2Conv').value;
+  params.step3Conv=+document.getElementById('set-step3Conv').value;
   params.arpu=+document.getElementById('set-arpu').value;
   params.existingBase=+document.getElementById('set-existingBase').value;
   params.churnRate=+document.getElementById('set-churnRate').value;
   params.existingArpu=+document.getElementById('set-existingArpu').value;
-  params.convUplift=params.dwldToKyc/100*params.kycConv/100*params.kycToOrder/100*100;
+  params.convUplift=params.step1Conv/100*params.step2Conv/100*params.step3Conv/100*100;
   document.querySelectorAll('[data-ret-idx]').forEach(el=>{retention[+el.dataset.retIdx]=+el.value});
   enterDashboard();
 }
@@ -400,10 +400,10 @@ function buildRetGrid(){
 }
 
 function formatVal(k){const d=sliderDefs.find(x=>x.k===k);const v=params[k];if(d.suffix==="%")return v.toFixed(1)+"%";if(d.suffix==="€")return"€"+v.toFixed(0);return Math.round(v).toLocaleString();}
-function onSlider(k,v){params[k]=+v;const el=document.getElementById("val-"+k);if(el)el.textContent=formatVal(k);if(k==="retUplift")buildRetGrid();update();}
+function onSlider(k,v){params[k]=+v;const el=document.getElementById("val-"+k);if(el)el.textContent=formatVal(k);if(k==="retUplift")buildRetGrid();if(["step1Conv","step2Conv","step3Conv"].includes(k)){params.convUplift=params.step1Conv/100*params.step2Conv/100*params.step3Conv/100*100;const cuEl=document.getElementById("val-convUplift");if(cuEl)cuEl.textContent=formatVal("convUplift");const cuRange=document.querySelector("#s-convUplift input[type=range]");if(cuRange)cuRange.value=params.convUplift;}update();}
 
 function resetAll(){
-  params={downloads:50000,dwldToKyc:65,kycConv:50,kycToOrder:77,arpu:25,convUplift:25,convUpliftPct:0,retUplift:0,existingBase:100000,churnRate:3,existingArpu:20};
+  params={downloads:50000,step1Conv:65,step2Conv:50,step3Conv:77,arpu:25,convUplift:25,convUpliftPct:0,retUplift:0,existingBase:100000,churnRate:3,existingArpu:20};
   retention=[...DEFAULT_RET];buildSliders();buildRetGrid();update();
 }
 
@@ -522,7 +522,7 @@ function drawExistingChart(id,exM){
 function exportHTML(){const src=document.documentElement.outerHTML;const blob=new Blob([src],{type:"text/html"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="revenue_model.html";a.click();URL.revokeObjectURL(a.href);}
 
 // Compute initial overall conv from funnel steps
-params.convUplift=(params.dwldToKyc/100)*(params.kycConv/100)*(params.kycToOrder/100)*100;
+params.convUplift=(params.step1Conv/100)*(params.step2Conv/100)*(params.step3Conv/100)*100;
 
 window.addEventListener("resize",()=>{if(currentPage==='dashboard'){const d=compute();renderTab(d);}});
 </script>
